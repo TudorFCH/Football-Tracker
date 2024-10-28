@@ -77,7 +77,7 @@ The data model includes:
 	•	Team: Manages a collection of players and handles filtering options for match tracking. 
 
  
-![image](https://github.com/user-attachments/assets/3451e1b2-24f2-4a00-88e9-4ccd30b316e5)
+![image](https://github.com/user-attachments/assets/a64b3e6e-3b74-411a-8a04-71270fcd81e2)
 
 Relationships Summary
 The relationships among the entities are represented as follows:
