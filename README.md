@@ -77,8 +77,15 @@ The data model includes:
 	•	Team: Manages a collection of players and handles filtering options for match tracking. 
 
  
+![image](https://github.com/user-attachments/assets/3451e1b2-24f2-4a00-88e9-4ccd30b316e5)
 
- ![image](https://github.com/user-attachments/assets/477dd443-e66b-4ff9-8d87-32f3e36f6c37)
+Relationships Summary
+The relationships among the entities are represented as follows:
+- 1:1 between Player and PlayerStats.
+- 1:M between League and Team, Team and Player, Match and Event, and ScoreTracker and Match, Match and Team, Notification and Match.
+- M:N relationship between User and Team via FavoriteTeam entity.
+This structure ensures that each aspect of the Football Score & Player Stats Tracker is logically connected.
+
 
 
  
