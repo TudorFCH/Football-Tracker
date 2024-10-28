@@ -78,6 +78,7 @@ The data model includes:
 
  
 
- 
+ ![image](https://github.com/user-attachments/assets/477dd443-e66b-4ff9-8d87-32f3e36f6c37)
+
 
  
