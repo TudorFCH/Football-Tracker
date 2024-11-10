@@ -1,4 +1,4 @@
-package repository;
+package Repository;
 
 public interface IRepository<T> {
     void create(T entity);
