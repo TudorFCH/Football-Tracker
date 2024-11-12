@@ -27,18 +27,27 @@ public class Player {
     }
 
     // Getters for statistics
-    public int getPlayerID() { return playerID; }
-    public String getName() { return name; }
-    public int getTeamID() { return teamID; }
+    public int getGoals() { return goals; }
+    public int getAssists() { return assists; }
+    public int getYellowCards() { return yellowCards; }
+    public int getRedCards() { return redCards; }
+    public int getMinutesPlayed() { return minutesPlayed; }
 
-    public void addGoal() { goals++; }
-    public void addAssist() { assists++; }
-    public void addYellowCard() { yellowCards++; }
-    public void addRedCard() { redCards++; }
+    // Methods to increment statistics
+    public void addGoal() { this.goals++; }
+    public void addAssist() { this.assists++; }
+    public void addYellowCard() { this.yellowCards++; }
+    public void addRedCard() { this.redCards++; }
     public void addMinutesPlayed(int minutes) { minutesPlayed += minutes; }
 
+    // Method to display statistics as a formatted string
     public String getStatistics() {
         return String.format("Goals: %d, Assists: %d, Yellow Cards: %d, Red Cards: %d, Minutes Played: %d",
                 goals, assists, yellowCards, redCards, minutesPlayed);
     }
+
+    // Additional getters for player information
+    public int getPlayerID() { return playerID; }
+    public String getName() { return name; }
+    public int getTeamID() { return teamID; }
 }

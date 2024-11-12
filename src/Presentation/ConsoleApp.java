@@ -2,8 +2,8 @@ package Presentation;
 
 import Controller.MatchController;
 import Model.*;
+import Repository.FilePlayerRepository;
 import Repository.FileRepository;
-import Repository.PlayerRepository;
 import Service.MatchService;
 
 import java.util.Scanner;
@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class ConsoleApp {
     public static void main(String[] args) {
         MatchController matchController = new MatchController(new MatchService(new FileRepository("matches.txt")));
-        PlayerRepository playerRepository = new PlayerRepository();
+        FilePlayerRepository playerRepository = new FilePlayerRepository("players.txt");
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to the Football Score & Player Stats Tracker");
@@ -92,7 +92,7 @@ public class ConsoleApp {
 
                     if (event != null) {
                         match.addEvent(event);
-                        playerRepository.updatePlayer(player); // Save updated player stats to repository
+                        playerRepository.updatePlayer(player); // Save updated player stats to file
                         System.out.println("Event added successfully, and player statistics updated!");
                     }
                 } else {
