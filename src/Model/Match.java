@@ -1,5 +1,6 @@
 package Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Match {
@@ -16,6 +17,15 @@ public class Match {
         this.teamId2 = teamId2;
         this.date = date;
         this.location = location;
+        this.events = new ArrayList<>(); // Initialize events to avoid null issues
+    }
+
+    public int getMatchID() {
+        return matchID;
+    }
+
+    public void setMatchID(int matchID) {
+        this.matchID = matchID;
     }
 
     public void addEvent(Model.Event event) {
@@ -23,6 +33,20 @@ public class Match {
     }
 
     public String getSummary() {
-        return "Summary";
+        return "Match ID: " + matchID + ", Teams: " + teamId1 + " vs " + teamId2 + ", Date: " + date + ", Location: " + location;
+    }
+
+    public String toFileString() {
+        return matchID + "," + teamId1 + "," + teamId2 + "," + date + "," + location;
+    }
+
+    public static Match fromFileString(String fileString) {
+        String[] data = fileString.split(",");
+        int matchID = Integer.parseInt(data[0]);
+        int teamId1 = Integer.parseInt(data[1]);
+        int teamId2 = Integer.parseInt(data[2]);
+        String date = data[3];
+        String location = data[4];
+        return new Match(matchID, teamId1, teamId2, date, location);
     }
 }

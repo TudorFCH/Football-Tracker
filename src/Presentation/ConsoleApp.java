@@ -2,14 +2,14 @@ package Presentation;
 
 import Controller.MatchController;
 import Model.Match;
-import Repository.InMemoryRepository;
+import Repository.FileRepository;
 import Service.MatchService;
 
 import java.util.Scanner;
 
 public class ConsoleApp {
     public static void main(String[] args) {
-        MatchController matchController = new MatchController(new MatchService(new InMemoryRepository<>()));
+        MatchController matchController = new MatchController(new MatchService(new FileRepository("matches.txt")));
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to the Football Score & Player Stats Tracker");
@@ -20,16 +20,16 @@ public class ConsoleApp {
             System.out.println("3. Exit");
             int choice = scanner.nextInt();
             if (choice == 1) {
-                System.out.println("Enter Match ID, Team1 ID, Team2 ID, Date, Location:");
-                int matchID = scanner.nextInt();
+                System.out.println("Enter Team1 ID, Team2 ID, Date, Location:");
                 int teamId1 = scanner.nextInt();
                 int teamId2 = scanner.nextInt();
-                String date = scanner.next();
-                String location = scanner.next();
+                scanner.nextLine(); // consume newline
+                String date = scanner.nextLine();
+                String location = scanner.nextLine();
 
-                Match match = new Match(matchID, teamId1, teamId2, date, location);
+                Match match = new Match(0, teamId1, teamId2, date, location);
                 matchController.addMatch(match);
-                System.out.println("Match added successfully!");
+                System.out.println("Match added successfully and saved to file!");
             } else if (choice == 2) {
                 System.out.println("Enter Match ID:");
                 int matchID = scanner.nextInt();
