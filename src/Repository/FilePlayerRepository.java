@@ -67,23 +67,32 @@ public class FilePlayerRepository {
     }
 
     private Player playerFromFileString(String fileString) {
-        String[] data = fileString.split(",");
-        int playerID = Integer.parseInt(data[0]);
-        String name = data[1];
-        int teamID = Integer.parseInt(data[2]);
-        int goals = Integer.parseInt(data[3]);
-        int assists = Integer.parseInt(data[4]);
-        int yellowCards = Integer.parseInt(data[5]);
-        int redCards = Integer.parseInt(data[6]);
-        int minutesPlayed = Integer.parseInt(data[7]);
+        try {
+            String[] data = fileString.split(",");
+            if (data.length != 8) {
+                throw new IllegalArgumentException("Invalid player data format: " + fileString);
+            }
 
-        Player player = new Player(playerID, name, teamID);
-        Player playerToUpdate = null;
-        player.addGoal(goals - playerToUpdate.getGoals());
-        player.addAssist(assists - playerToUpdate.getAssists());
-        player.addYellowCard(yellowCards - playerToUpdate.getYellowCards());
-        player.addRedCard(redCards - playerToUpdate.getRedCards());
-        player.addMinutesPlayed(minutesPlayed);
-        return player;
+            int playerID = Integer.parseInt(data[0]);
+            String name = data[1];
+            int teamID = Integer.parseInt(data[2]);
+            int goals = Integer.parseInt(data[3]);
+            int assists = Integer.parseInt(data[4]);
+            int yellowCards = Integer.parseInt(data[5]);
+            int redCards = Integer.parseInt(data[6]);
+            int minutesPlayed = Integer.parseInt(data[7]);
+
+            Player player = new Player(playerID, name, teamID);
+            player.addGoal(goals);
+            player.addAssist(assists);
+            player.addYellowCard(yellowCards);
+            player.addRedCard(redCards);
+            player.addMinutesPlayed(minutesPlayed);
+
+            return player;
+        } catch (Exception e) {
+            System.out.println("Error parsing player data: " + fileString + " - " + e.getMessage());
+            return null; // Return null for invalid data
+        }
     }
 }
