@@ -1,5 +1,6 @@
 package Repository;
 
+import Model.Event;
 import Model.Player;
 
 import java.io.*;
@@ -77,10 +78,11 @@ public class FilePlayerRepository {
         int minutesPlayed = Integer.parseInt(data[7]);
 
         Player player = new Player(playerID, name, teamID);
-        player.addGoal();
-        player.addAssist();
-        player.addYellowCard();
-        player.addRedCard();
+        Player playerToUpdate = null;
+        player.addGoal(goals - playerToUpdate.getGoals());
+        player.addAssist(assists - playerToUpdate.getAssists());
+        player.addYellowCard(yellowCards - playerToUpdate.getYellowCards());
+        player.addRedCard(redCards - playerToUpdate.getRedCards());
         player.addMinutesPlayed(minutesPlayed);
         return player;
     }

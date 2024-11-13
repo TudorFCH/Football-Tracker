@@ -34,10 +34,10 @@ public class Player {
     public int getMinutesPlayed() { return minutesPlayed; }
 
     // Methods to increment statistics
-    public void addGoal() { this.goals++; }
-    public void addAssist() { this.assists++; }
-    public void addYellowCard() { this.yellowCards++; }
-    public void addRedCard() { this.redCards++; }
+    public void addGoal(int i) { this.goals++; }
+    public void addAssist(int i) { this.assists++; }
+    public void addYellowCard(int i) { this.yellowCards++; }
+    public void addRedCard(int i) { this.redCards++; }
     public void addMinutesPlayed(int minutes) { minutesPlayed += minutes; }
 
     // Method to display statistics as a formatted string

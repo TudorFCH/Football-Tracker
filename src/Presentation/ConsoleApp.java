@@ -1,129 +1,156 @@
 package Presentation;
 
 import Controller.MatchController;
-import Model.*;
+import Model.Match;
+import Model.Player;
 import Repository.FilePlayerRepository;
 import Repository.FileRepository;
 import Service.MatchService;
+import Service.PlayerService;
 
 import java.util.Scanner;
 
+/**
+ * Entry point for the Football Score & Player Stats Tracker application.
+ */
 public class ConsoleApp {
     public static void main(String[] args) {
-        MatchController matchController = new MatchController(new MatchService(new FileRepository("matches.txt")));
-        FilePlayerRepository playerRepository = new FilePlayerRepository("players.txt");
+        // Initialize services and repositories
+        MatchService matchService = new MatchService(new FileRepository("matches.txt"));
+        PlayerService playerService = new PlayerService(new FilePlayerRepository("players.txt"));
+        MatchController matchController = new MatchController(matchService);
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to the Football Score & Player Stats Tracker");
+
+        System.out.println("Welcome to the Football Score & Player Stats Tracker!");
 
         while (true) {
+            System.out.println("\nMenu:");
             System.out.println("1. Add Match");
             System.out.println("2. View Match");
-            System.out.println("3. Add Event to Match");
-            System.out.println("4. Add Player");
-            System.out.println("5. View Player Statistics");
-            System.out.println("6. Exit");
+            System.out.println("3. Add Player");
+            System.out.println("4. View Player");
+            System.out.println("5. Update Player Statistics");
+            System.out.println("6. Delete Player");
+            System.out.println("7. Exit");
+
+            System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
-            if (choice == 1) {
-                // Adding a new match
-                System.out.println("Enter Team1 ID, Team2 ID, Date, Location:");
-                int teamId1 = scanner.nextInt();
-                int teamId2 = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
-                String date = scanner.nextLine();
-                String location = scanner.nextLine();
 
-                Match match = new Match(0, teamId1, teamId2, date, location);
-                matchController.addMatch(match);
-                System.out.println("Match added successfully and saved to file!");
-            } else if (choice == 2) {
-                // Viewing a match
-                System.out.println("Enter Match ID:");
-                int matchID = scanner.nextInt();
-                Match match = matchController.getMatch(matchID);
-                if (match != null) {
-                    System.out.println("Match Summary:\n" + match.getSummary());
-                } else {
-                    System.out.println("Match not found.");
-                }
-            } else if (choice == 3) {
-                // Adding an event to an existing match
-                System.out.println("Enter Match ID to add event:");
-                int matchID = scanner.nextInt();
-                Match match = matchController.getMatch(matchID);
-                if (match != null) {
-                    System.out.println("Select Event Type:\n1. Goal\n2. Card\n3. Minutes Played");
-                    int eventType = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
+            try {
+                switch (choice) {
+                    case 1:
+                        // Add Match
+                        System.out.print("Enter Match ID: ");
+                        int matchID = scanner.nextInt();
+                        System.out.print("Enter Team1 ID: ");
+                        int teamId1 = scanner.nextInt();
+                        System.out.print("Enter Team2 ID: ");
+                        int teamId2 = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+                        System.out.print("Enter Date (YYYY-MM-DD): ");
+                        String date = scanner.nextLine();
+                        System.out.print("Enter Location: ");
+                        String location = scanner.nextLine();
 
-                    System.out.println("Enter Player ID:");
-                    int playerID = scanner.nextInt();
-                    Player player = playerRepository.getPlayer(playerID);
-                    if (player == null) {
-                        System.out.println("Player not found.");
-                        continue;
-                    }
-                    System.out.println("Enter Time:");
-                    String time = scanner.nextLine();
+                        Match match = new Match(matchID, teamId1, teamId2, date, location);
+                        matchController.addMatch(match);
+                        System.out.println("Match added successfully!");
+                        break;
 
-                    Event event = null;
-                    if (eventType == 1) {
-                        System.out.println("Is this an assist? (true/false):");
-                        boolean isAssist = scanner.nextBoolean();
-                        event = new GoalEvent(0, time, playerID, isAssist);
-                        player.addGoal();
-                        if (isAssist) player.addAssist();
-                    } else if (eventType == 2) {
-                        System.out.println("Enter Card Type (Yellow/Red):");
-                        String cardType = scanner.nextLine();
-                        event = new CardEvent(0, time, playerID, cardType);
-                        if (cardType.equalsIgnoreCase("Yellow")) {
-                            player.addYellowCard();
-                        } else if (cardType.equalsIgnoreCase("Red")) {
-                            player.addRedCard();
+                    case 2:
+                        // View Match
+                        System.out.print("Enter Match ID to view: ");
+                        int viewMatchID = scanner.nextInt();
+                        Match retrievedMatch = matchService.getMatch(viewMatchID);
+                        if (retrievedMatch != null) {
+                            System.out.println("Match Details:");
+                            System.out.println(retrievedMatch.getSummary());
+                        } else {
+                            System.out.println("Match not found.");
                         }
-                    } else if (eventType == 3) {
-                        System.out.println("Enter Minutes Played:");
-                        int minutesPlayed = scanner.nextInt();
-                        event = new MinutesPlayedEvent(0, time, playerID, minutesPlayed);
-                        player.addMinutesPlayed(minutesPlayed);
-                    }
+                        break;
 
-                    if (event != null) {
-                        match.addEvent(event);
-                        playerRepository.updatePlayer(player); // Save updated player stats to file
-                        System.out.println("Event added successfully, and player statistics updated!");
-                    }
-                } else {
-                    System.out.println("Match not found.");
+                    case 3:
+                        // Add Player
+                        System.out.print("Enter Player Name: ");
+                        String playerName = scanner.nextLine();
+                        System.out.print("Enter Team ID: ");
+                        int teamID = scanner.nextInt();
+
+                        Player player = new Player(0, playerName, teamID);
+                        playerService.addPlayer(player);
+                        System.out.println("Player added successfully!");
+                        break;
+
+                    case 4:
+                        // View Player
+                        System.out.print("Enter Player ID to view: ");
+                        int playerID = scanner.nextInt();
+                        Player retrievedPlayer = playerService.getPlayer(playerID);
+                        if (retrievedPlayer != null) {
+                            System.out.println("Player Details:");
+                            System.out.println("Name: " + retrievedPlayer.getName());
+                            System.out.println("Team ID: " + retrievedPlayer.getTeamID());
+                            System.out.println("Statistics: " + retrievedPlayer.getStatistics());
+                        } else {
+                            System.out.println("Player not found.");
+                        }
+                        break;
+
+                    case 5:
+                        // Update Player Statistics
+                        System.out.print("Enter Player ID to update: ");
+                        int updatePlayerID = scanner.nextInt();
+                        Player playerToUpdate = playerService.getPlayer(updatePlayerID);
+                        if (playerToUpdate != null) {
+                            System.out.print("Enter New Goals: ");
+                            int goals = scanner.nextInt();
+                            System.out.print("Enter New Assists: ");
+                            int assists = scanner.nextInt();
+                            System.out.print("Enter New Yellow Cards: ");
+                            int yellowCards = scanner.nextInt();
+                            System.out.print("Enter New Red Cards: ");
+                            int redCards = scanner.nextInt();
+                            System.out.print("Enter New Minutes Played: ");
+                            int minutesPlayed = scanner.nextInt();
+
+                            playerToUpdate.addGoal(goals - playerToUpdate.getGoals());
+                            playerToUpdate.addAssist(assists - playerToUpdate.getAssists());
+                            playerToUpdate.addYellowCard(yellowCards - playerToUpdate.getYellowCards());
+                            playerToUpdate.addRedCard(redCards - playerToUpdate.getRedCards());
+                            playerToUpdate.addMinutesPlayed(minutesPlayed - playerToUpdate.getMinutesPlayed());
+
+                            playerService.updatePlayer(playerToUpdate);
+                            System.out.println("Player statistics updated successfully!");
+                        } else {
+                            System.out.println("Player not found.");
+                        }
+                        break;
+
+                    case 6:
+                        // Delete Player
+                        System.out.print("Enter Player ID to delete: ");
+                        int deletePlayerID = scanner.nextInt();
+                        playerService.deletePlayer(deletePlayerID);
+                        System.out.println("Player deleted successfully!");
+                        break;
+
+                    case 7:
+                        // Exit
+                        System.out.println("Exiting the application. Goodbye!");
+                        scanner.close();
+                        return;
+
+                    default:
+                        System.out.println("Invalid option. Please try again.");
                 }
-            } else if (choice == 4) {
-                // Adding a player
-                System.out.println("Enter Player Name:");
-                String playerName = scanner.nextLine();
-                System.out.println("Enter Team ID:");
-                int teamID = scanner.nextInt();
-                Player player = new Player(0, playerName, teamID);
-                playerRepository.addPlayer(player);
-                System.out.println("Player added successfully!");
-            } else if (choice == 5) {
-                // Viewing player statistics
-                System.out.println("Enter Player ID:");
-                int playerID = scanner.nextInt();
-                Player player = playerRepository.getPlayer(playerID);
-                if (player != null) {
-                    System.out.println("Player: " + player.getName() + "\nStatistics: " + player.getStatistics());
-                } else {
-                    System.out.println("Player not found.");
-                }
-            } else if (choice == 6) {
-                System.out.println("Exiting application...");
-                break;
-            } else {
-                System.out.println("Invalid choice. Please try again.");
+            } catch (IllegalArgumentException e) {
+                System.out.println("Error: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("An unexpected error occurred: " + e.getMessage());
             }
         }
-        scanner.close();
     }
 }
