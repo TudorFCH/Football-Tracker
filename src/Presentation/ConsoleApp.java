@@ -3,8 +3,7 @@ package Presentation;
 import Controller.MatchController;
 import Model.Match;
 import Model.Player;
-import Repository.FilePlayerRepository;
-import Repository.FileRepository;
+import Repository.InMemoryRepository;
 import Service.MatchService;
 import Service.PlayerService;
 
@@ -16,8 +15,11 @@ import java.util.Scanner;
 public class ConsoleApp {
     public static void main(String[] args) {
         // Initialize services and repositories
-        MatchService matchService = new MatchService(new FileRepository("matches.txt"));
-        PlayerService playerService = new PlayerService(new FilePlayerRepository("players.txt"));
+        InMemoryRepository<Player> playerRepository = new InMemoryRepository<>();
+        InMemoryRepository<Match> matchRepository = new InMemoryRepository<>();
+
+        PlayerService playerService = new PlayerService(playerRepository);
+        MatchService matchService = new MatchService(matchRepository);
         MatchController matchController = new MatchController(matchService);
 
         Scanner scanner = new Scanner(System.in);
@@ -32,7 +34,8 @@ public class ConsoleApp {
             System.out.println("4. View Player");
             System.out.println("5. Update Player Statistics");
             System.out.println("6. Delete Player");
-            System.out.println("7. Exit");
+            System.out.println("7. Compare Players (Better Goalscorer)");
+            System.out.println("8. Exit");
 
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -41,7 +44,6 @@ public class ConsoleApp {
             try {
                 switch (choice) {
                     case 1:
-                        // Add Match
                         System.out.print("Enter Match ID: ");
                         int matchID = scanner.nextInt();
                         System.out.print("Enter Team1 ID: ");
@@ -60,7 +62,6 @@ public class ConsoleApp {
                         break;
 
                     case 2:
-                        // View Match
                         System.out.print("Enter Match ID to view: ");
                         int viewMatchID = scanner.nextInt();
                         Match retrievedMatch = matchService.getMatch(viewMatchID);
@@ -73,7 +74,6 @@ public class ConsoleApp {
                         break;
 
                     case 3:
-                        // Add Player
                         System.out.print("Enter Player Name: ");
                         String playerName = scanner.nextLine();
                         System.out.print("Enter Team ID: ");
@@ -85,7 +85,6 @@ public class ConsoleApp {
                         break;
 
                     case 4:
-                        // View Player
                         System.out.print("Enter Player ID to view: ");
                         int playerID = scanner.nextInt();
                         Player retrievedPlayer = playerService.getPlayer(playerID);
@@ -100,7 +99,6 @@ public class ConsoleApp {
                         break;
 
                     case 5:
-                        // Update Player Statistics
                         System.out.print("Enter Player ID to update: ");
                         int updatePlayerID = scanner.nextInt();
                         Player playerToUpdate = playerService.getPlayer(updatePlayerID);
@@ -130,7 +128,6 @@ public class ConsoleApp {
                         break;
 
                     case 6:
-                        // Delete Player
                         System.out.print("Enter Player ID to delete: ");
                         int deletePlayerID = scanner.nextInt();
                         playerService.deletePlayer(deletePlayerID);
@@ -138,7 +135,19 @@ public class ConsoleApp {
                         break;
 
                     case 7:
-                        // Exit
+                        System.out.print("Enter ID of the first player: ");
+                        int playerId1 = scanner.nextInt();
+                        System.out.print("Enter ID of the second player: ");
+                        int playerId2 = scanner.nextInt();
+
+                        try {
+                            playerService.betterGoalscorer(playerId1, playerId2);
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Error: " + e.getMessage());
+                        }
+                        break;
+
+                    case 8:
                         System.out.println("Exiting the application. Goodbye!");
                         scanner.close();
                         return;
