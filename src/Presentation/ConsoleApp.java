@@ -2,6 +2,7 @@ package Presentation;
 
 import Model.Match;
 import Model.Player;
+import Model.GoalEvent;
 import Repository.InMemoryRepository;
 import Service.MatchService;
 import Service.PlayerService;
@@ -18,7 +19,7 @@ public class ConsoleApp {
         InMemoryRepository<Player> playerRepository = new InMemoryRepository<>();
         InMemoryRepository<Match> matchRepository = new InMemoryRepository<>();
 
-        PlayerService playerService = new PlayerService(playerRepository);
+        PlayerService playerService = new PlayerService(playerRepository, matchRepository); // Pass both repositories
         MatchService matchService = new MatchService(matchRepository);
 
         Scanner scanner = new Scanner(System.in);
@@ -37,7 +38,7 @@ public class ConsoleApp {
             System.out.println("8. Sort Matches by ID");
             System.out.println("9. Sort Players by Goals");
             System.out.println("10. Filter Players by Goals");
-            System.out.println("11. Filter Matches by Location");
+            System.out.println("11. Calculate Player Performance in Match");
             System.out.println("12. Exit");
 
             System.out.print("Choose an option: ");
@@ -48,19 +49,19 @@ public class ConsoleApp {
                 switch (choice) {
                     case 1: // Add Match
                         System.out.print("Enter Match ID: ");
-                        int newMatchID = scanner.nextInt();
+                        int matchID = scanner.nextInt();
                         System.out.print("Enter Team1 ID: ");
-                        int newTeamId1 = scanner.nextInt();
+                        int teamId1 = scanner.nextInt();
                         System.out.print("Enter Team2 ID: ");
-                        int newTeamId2 = scanner.nextInt();
+                        int teamId2 = scanner.nextInt();
                         scanner.nextLine(); // Consume newline
                         System.out.print("Enter Date (YYYY-MM-DD): ");
-                        String newDate = scanner.nextLine();
+                        String date = scanner.nextLine();
                         System.out.print("Enter Location: ");
-                        String newLocation = scanner.nextLine();
+                        String location = scanner.nextLine();
 
-                        Match newMatch = new Match(newMatchID, newTeamId1, newTeamId2, newDate, newLocation);
-                        matchService.addMatch(newMatch);
+                        Match match = new Match(matchID, teamId1, teamId2, date, location);
+                        matchService.addMatch(match);
                         System.out.println("Match added successfully!");
                         break;
 
@@ -78,19 +79,19 @@ public class ConsoleApp {
 
                     case 3: // Add Player
                         System.out.print("Enter Player Name: ");
-                        String newPlayerName = scanner.nextLine();
+                        String playerName = scanner.nextLine();
                         System.out.print("Enter Team ID: ");
-                        int newTeamID = scanner.nextInt();
+                        int teamID = scanner.nextInt();
 
-                        Player newPlayer = new Player(0, newPlayerName, newTeamID);
-                        playerService.addPlayer(newPlayer);
+                        Player player = new Player(0, playerName, teamID);
+                        playerService.addPlayer(player);
                         System.out.println("Player added successfully!");
                         break;
 
                     case 4: // View Player
                         System.out.print("Enter Player ID to view: ");
-                        int viewPlayerID = scanner.nextInt();
-                        Player playerToView = playerService.getPlayer(viewPlayerID);
+                        int playerID = scanner.nextInt();
+                        Player playerToView = playerService.getPlayer(playerID);
                         if (playerToView != null) {
                             System.out.println("Player Details:");
                             System.out.println("Name: " + playerToView.getName());
@@ -176,13 +177,21 @@ public class ConsoleApp {
                         }
                         break;
 
-                    case 11: // Filter Matches by Location
-                        System.out.print("Enter the location to filter by: ");
-                        String filterLocation = scanner.nextLine();
-                        System.out.println("Matches played at " + filterLocation + ":");
-                        List<Match> filteredMatches = matchService.filterMatchesByLocation(filterLocation);
-                        for (Match filteredMatch : filteredMatches) {
-                            System.out.println(filteredMatch.getSummary());
+                    case 11: // Calculate Player Performance in Match
+                        System.out.print("Enter Player ID: ");
+                        int playerPerformanceId = scanner.nextInt();
+                        System.out.print("Enter Match ID: ");
+                        int matchPerformanceId = scanner.nextInt();
+
+                        List<GoalEvent> events = List.of(
+                                new GoalEvent(1, matchPerformanceId, playerPerformanceId, 2)
+                        );
+
+                        try {
+                            String performance = playerService.calculatePlayerPerformance(playerPerformanceId, matchPerformanceId, events);
+                            System.out.println(performance);
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Error: " + e.getMessage());
                         }
                         break;
 
