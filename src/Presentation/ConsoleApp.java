@@ -2,7 +2,8 @@ package Presentation;
 
 import Model.Match;
 import Model.Player;
-import Repository.InMemoryRepository;
+import Repository.FilePlayerRepository;
+import Repository.FileRepository;
 import Service.MatchService;
 import Service.PlayerService;
 
@@ -14,9 +15,9 @@ import java.util.Scanner;
  */
 public class ConsoleApp {
     public static void main(String[] args) {
-        // Initialize repositories and services
-        InMemoryRepository<Player> playerRepository = new InMemoryRepository<>();
-        InMemoryRepository<Match> matchRepository = new InMemoryRepository<>();
+        // Initialize file-based repositories and services
+        FilePlayerRepository playerRepository = new FilePlayerRepository("players.txt");
+        FileRepository matchRepository = new FileRepository("matches.txt");
 
         PlayerService playerService = new PlayerService(playerRepository);
         MatchService matchService = new MatchService(matchRepository);
@@ -47,8 +48,6 @@ public class ConsoleApp {
             try {
                 switch (choice) {
                     case 1: // Add Match
-                        System.out.print("Enter Match ID: ");
-                        int newMatchID = scanner.nextInt();
                         System.out.print("Enter Team1 ID: ");
                         int newTeamId1 = scanner.nextInt();
                         System.out.print("Enter Team2 ID: ");
@@ -59,7 +58,7 @@ public class ConsoleApp {
                         System.out.print("Enter Location: ");
                         String newLocation = scanner.nextLine();
 
-                        Match newMatch = new Match(newMatchID, newTeamId1, newTeamId2, newDate, newLocation);
+                        Match newMatch = new Match(0, newTeamId1, newTeamId2, newDate, newLocation);
                         matchService.addMatch(newMatch);
                         System.out.println("Match added successfully!");
                         break;

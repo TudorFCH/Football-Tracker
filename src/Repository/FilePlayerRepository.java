@@ -1,13 +1,11 @@
 package Repository;
 
-import Model.Event;
 import Model.Player;
-
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FilePlayerRepository {
+public class FilePlayerRepository implements IRepository<Player> {
     private final String filename;
     private Map<Integer, Player> playerStorage = new HashMap<>();
     private int currentPlayerID = 1;
@@ -17,22 +15,26 @@ public class FilePlayerRepository {
         loadFromFile();
     }
 
-    public void addPlayer(Player player) {
+    @Override
+    public void create(Player player) {
         player.setPlayerID(currentPlayerID++);
         playerStorage.put(player.getPlayerID(), player);
         saveToFile();
     }
 
-    public Player getPlayer(int playerID) {
+    @Override
+    public Player read(int playerID) {
         return playerStorage.get(playerID);
     }
 
-    public void updatePlayer(Player player) {
+    @Override
+    public void update(Player player) {
         playerStorage.put(player.getPlayerID(), player);
         saveToFile();
     }
 
-    public void deletePlayer(int playerID) {
+    @Override
+    public void delete(int playerID) {
         playerStorage.remove(playerID);
         saveToFile();
     }
