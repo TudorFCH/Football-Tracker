@@ -15,13 +15,14 @@ import java.util.Scanner;
  */
 public class ConsoleApp {
     public static void main(String[] args) {
-        // Initialize file-based repositories and services
+        // Initialize repositories and services
+        // Initialize file repositories
         FilePlayerRepository playerRepository = new FilePlayerRepository("players.txt");
         FileRepository matchRepository = new FileRepository("matches.txt");
 
+        // Initialize the services with the appropriate repositories
         PlayerService playerService = new PlayerService(playerRepository);
         MatchService matchService = new MatchService(matchRepository);
-
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Welcome to the Football Score & Player Stats Tracker!");
@@ -48,6 +49,8 @@ public class ConsoleApp {
             try {
                 switch (choice) {
                     case 1: // Add Match
+                        System.out.print("Enter Match ID: ");
+                        int newMatchID = scanner.nextInt();
                         System.out.print("Enter Team1 ID: ");
                         int newTeamId1 = scanner.nextInt();
                         System.out.print("Enter Team2 ID: ");
@@ -58,7 +61,7 @@ public class ConsoleApp {
                         System.out.print("Enter Location: ");
                         String newLocation = scanner.nextLine();
 
-                        Match newMatch = new Match(0, newTeamId1, newTeamId2, newDate, newLocation);
+                        Match newMatch = new Match(newMatchID, newTeamId1, newTeamId2, newDate, newLocation);
                         matchService.addMatch(newMatch);
                         System.out.println("Match added successfully!");
                         break;

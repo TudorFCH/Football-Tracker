@@ -1,8 +1,6 @@
 package Service;
 
 import Model.Player;
-import Model.Match;
-import Model.GoalEvent;
 import Repository.IRepository;
 
 import java.util.ArrayList;
@@ -10,21 +8,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Provides business logic for managing players with validations, sorting, filtering, and comparisons.
+ * Provides business logic for managing players with validations, sorting, and filtering.
  */
 public class PlayerService {
     private IRepository<Player> playerRepository;
-    private IRepository<Match> matchRepository;
 
     /**
-     * Constructs a PlayerService with the specified repositories.
+     * Constructs a PlayerService with the specified repository.
      *
      * @param playerRepository the repository for managing players
-     * @param matchRepository  the repository for managing matches
      */
-    public PlayerService(IRepository<Player> playerRepository, IRepository<Match> matchRepository) {
+    public PlayerService(IRepository<Player> playerRepository) {
         this.playerRepository = playerRepository;
-        this.matchRepository = matchRepository;
     }
 
     /**
@@ -59,111 +54,6 @@ public class PlayerService {
     }
 
     /**
-     * Filters players who have scored more goals than the specified number.
-     *
-     * @param minGoals the minimum number of goals
-     * @return a list of players who have scored more than the given number of goals
-     */
-    public List<Player> filterPlayersByGoals(int minGoals) {
-        List<Player> filteredPlayers = new ArrayList<>();
-        int id = 1;
-
-        while (true) {
-            Player player = playerRepository.read(id);
-            if (player == null) {
-                break;
-            }
-            if (player.getGoals() > minGoals) {
-                filteredPlayers.add(player);
-            }
-            id++;
-        }
-
-        return filteredPlayers;
-    }
-
-    /**
-     * Compares two players based on their goals per 90 minutes played.
-     * Displays the better goalscorer and their goals per 90 minutes ratio.
-     *
-     * @param playerId1 the ID of the first player
-     * @param playerId2 the ID of the second player
-     * @throws IllegalArgumentException if either player does not exist
-     */
-    public void betterGoalscorer(int playerId1, int playerId2) {
-        // Retrieve the players from the repository
-        Player player1 = playerRepository.read(playerId1);
-        Player player2 = playerRepository.read(playerId2);
-
-        // Validate that both players exist
-        if (player1 == null) {
-            throw new IllegalArgumentException("Player with ID " + playerId1 + " does not exist.");
-        }
-        if (player2 == null) {
-            throw new IllegalArgumentException("Player with ID " + playerId2 + " does not exist.");
-        }
-
-        // Calculate goals per 90 minutes for each player
-        double goalsPer90Player1 = player1.getMinutesPlayed() > 0
-                ? (double) player1.getGoals() / player1.getMinutesPlayed() * 90
-                : 0;
-        double goalsPer90Player2 = player2.getMinutesPlayed() > 0
-                ? (double) player2.getGoals() / player2.getMinutesPlayed() * 90
-                : 0;
-
-        // Display the comparison results
-        System.out.printf("%s (Player ID: %d) - Goals per 90 minutes: %.2f%n",
-                player1.getName(), player1.getPlayerID(), goalsPer90Player1);
-        System.out.printf("%s (Player ID: %d) - Goals per 90 minutes: %.2f%n",
-                player2.getName(), player2.getPlayerID(), goalsPer90Player2);
-
-        if (goalsPer90Player1 > goalsPer90Player2) {
-            System.out.printf("%s is the better goalscorer.%n", player1.getName());
-        } else if (goalsPer90Player2 > goalsPer90Player1) {
-            System.out.printf("%s is the better goalscorer.%n", player2.getName());
-        } else {
-            System.out.println("Both players have the same goals per 90 minutes.");
-        }
-    }
-
-    /**
-     * Calculates the performance of a player in a specific match.
-     *
-     * @param playerId the ID of the player
-     * @param matchId  the ID of the match
-     * @param events   the list of events associated with the match
-     * @return a string summarizing the player's performance in the match
-     * @throws IllegalArgumentException if the player or match does not exist
-     */
-    public String calculatePlayerPerformance(int playerId, int matchId, List<GoalEvent> events) {
-        Player player = playerRepository.read(playerId);
-        if (player == null) {
-            throw new IllegalArgumentException("Player with ID " + playerId + " does not exist.");
-        }
-
-        Match match = matchRepository.read(matchId);
-        if (match == null) {
-            throw new IllegalArgumentException("Match with ID " + matchId + " does not exist.");
-        }
-
-        // Calculate goals and assists by the player in this match
-        int goals = 0;
-        int assists = 0;
-
-        for (GoalEvent event : events) {
-            if (event != null && event.getMatchID() == matchId && event.getPlayerID() == playerId) {
-                goals++;
-                assists += event.getAssists();
-            }
-        }
-
-        return String.format(
-                "Player %s (ID: %d) in Match %d:\nGoals: %d\nAssists: %d",
-                player.getName(), playerId, matchId, goals, assists
-        );
-    }
-
-    /**
      * Updates a player's information with validation.
      *
      * @param player the player to update
@@ -186,6 +76,46 @@ public class PlayerService {
      */
     public void deletePlayer(int id) {
         playerRepository.delete(id);
+    }
+
+    /**
+     * Compares two players based on their goals per 90 minutes played.
+     * Displays the better goalscorer and their goals per 90 minutes ratio.
+     *
+     * @param playerId1 the ID of the first player
+     * @param playerId2 the ID of the second player
+     * @throws IllegalArgumentException if either player does not exist
+     */
+    public void betterGoalscorer(int playerId1, int playerId2) {
+        Player player1 = playerRepository.read(playerId1);
+        Player player2 = playerRepository.read(playerId2);
+
+        if (player1 == null) {
+            throw new IllegalArgumentException("Player with ID " + playerId1 + " does not exist.");
+        }
+        if (player2 == null) {
+            throw new IllegalArgumentException("Player with ID " + playerId2 + " does not exist.");
+        }
+
+        double goalsPer90Player1 = player1.getMinutesPlayed() > 0
+                ? (double) player1.getGoals() / player1.getMinutesPlayed() * 90
+                : 0;
+        double goalsPer90Player2 = player2.getMinutesPlayed() > 0
+                ? (double) player2.getGoals() / player2.getMinutesPlayed() * 90
+                : 0;
+
+        System.out.printf("%s (Player ID: %d) - Goals per 90 minutes: %.2f%n",
+                player1.getName(), player1.getPlayerID(), goalsPer90Player1);
+        System.out.printf("%s (Player ID: %d) - Goals per 90 minutes: %.2f%n",
+                player2.getName(), player2.getPlayerID(), goalsPer90Player2);
+
+        if (goalsPer90Player1 > goalsPer90Player2) {
+            System.out.printf("%s is the better goalscorer.%n", player1.getName());
+        } else if (goalsPer90Player2 > goalsPer90Player1) {
+            System.out.printf("%s is the better goalscorer.%n", player2.getName());
+        } else {
+            System.out.println("Both players have the same goals per 90 minutes.");
+        }
     }
 
     /**
@@ -214,5 +144,29 @@ public class PlayerService {
             }
         }
         return players;
+    }
+
+    /**
+     * Filters players who have scored more goals than the specified number.
+     *
+     * @param minGoals the minimum number of goals
+     * @return a list of players who have scored more than the given number of goals
+     */
+    public List<Player> filterPlayersByGoals(int minGoals) {
+        List<Player> filteredPlayers = new ArrayList<>();
+        int id = 1;
+
+        while (true) {
+            Player player = playerRepository.read(id);
+            if (player == null) {
+                break;
+            }
+            if (player.getGoals() > minGoals) {
+                filteredPlayers.add(player);
+            }
+            id++;
+        }
+
+        return filteredPlayers;
     }
 }
