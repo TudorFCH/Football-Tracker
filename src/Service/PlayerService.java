@@ -3,8 +3,12 @@ package Service;
 import Model.Player;
 import Repository.IRepository;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
- * Provides business logic for managing players with validations.
+ * Provides business logic for managing players with validations and sorting.
  */
 public class PlayerService {
     private IRepository<Player> playerRepository;
@@ -25,11 +29,10 @@ public class PlayerService {
      * @throws IllegalArgumentException if a duplicate player name is detected within the same team
      */
     public void addPlayer(Player player) {
-        // Validate unique player name within the same team
         for (int id = 1; id <= Integer.MAX_VALUE; id++) {
             Player existingPlayer = playerRepository.read(id);
             if (existingPlayer == null) {
-                break; // Stop if no more players exist
+                break;
             }
             if (existingPlayer.getTeamID() == player.getTeamID() &&
                     existingPlayer.getName().equalsIgnoreCase(player.getName())) {
@@ -84,11 +87,9 @@ public class PlayerService {
      * @throws IllegalArgumentException if either player does not exist
      */
     public void betterGoalscorer(int playerId1, int playerId2) {
-        // Retrieve the players from the repository
         Player player1 = playerRepository.read(playerId1);
         Player player2 = playerRepository.read(playerId2);
 
-        // Validate that both players exist
         if (player1 == null) {
             throw new IllegalArgumentException("Player with ID " + playerId1 + " does not exist.");
         }
@@ -96,7 +97,6 @@ public class PlayerService {
             throw new IllegalArgumentException("Player with ID " + playerId2 + " does not exist.");
         }
 
-        // Calculate goals per 90 minutes for each player
         double goalsPer90Player1 = player1.getMinutesPlayed() > 0
                 ? (double) player1.getGoals() / player1.getMinutesPlayed() * 90
                 : 0;
@@ -104,7 +104,6 @@ public class PlayerService {
                 ? (double) player2.getGoals() / player2.getMinutesPlayed() * 90
                 : 0;
 
-        // Display the comparison results
         System.out.printf("%s (Player ID: %d) - Goals per 90 minutes: %.2f%n",
                 player1.getName(), player1.getPlayerID(), goalsPer90Player1);
         System.out.printf("%s (Player ID: %d) - Goals per 90 minutes: %.2f%n",
@@ -118,5 +117,34 @@ public class PlayerService {
             System.out.println("Both players have the same goals per 90 minutes.");
         }
     }
-}
 
+    /**
+     * Sorts all players by their number of goals in descending order.
+     *
+     * @return a list of players sorted by goals
+     */
+    public List<Player> sortPlayersByGoals() {
+        List<Player> players = new ArrayList<>();
+        int id = 1;
+
+        // Iterate through all possible player IDs
+        while (true) {
+            Player player = playerRepository.read(id);
+            if (player == null) {
+                break; // Stop if no player exists for the ID
+            }
+            players.add(player);
+            id++;
+        }
+
+        // Manual sorting by goals in descending order
+        for (int i = 0; i < players.size(); i++) {
+            for (int j = 0; j < players.size() - i - 1; j++) {
+                if (players.get(j).getGoals() < players.get(j + 1).getGoals()) {
+                    Collections.swap(players, j, j + 1);
+                }
+            }
+        }
+        return players;
+    }
+}
