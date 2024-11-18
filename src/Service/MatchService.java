@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Provides business logic for managing matches with validations and sorting.
+ * Provides business logic for managing matches with validations, sorting, and filtering.
  */
 public class MatchService {
     private IRepository<Match> matchRepository;
@@ -29,12 +29,10 @@ public class MatchService {
      * @throws IllegalArgumentException if validation fails
      */
     public void addMatch(Match match) {
-        // Validate unique match ID
         if (matchRepository.read(match.getMatchID()) != null) {
             throw new IllegalArgumentException("Match ID must be unique.");
         }
 
-        // Validate team IDs
         if (match.getTeamId1() == match.getTeamId2()) {
             throw new IllegalArgumentException("A match cannot occur between the same team.");
         }
@@ -53,33 +51,57 @@ public class MatchService {
     }
 
     /**
-     * Sorts all matches by their ID as a placeholder for date sorting.
+     * Sorts all matches by their ID.
      *
-     * @return a list of matches sorted by their ID (as a replacement for date)
+     * @return a list of matches sorted by their ID
      */
     public List<Match> sortMatchesByID() {
         List<Match> matches = new ArrayList<>();
         int id = 1;
 
-        // Iterate over the repository to collect all matches
         while (true) {
             Match match = matchRepository.read(id);
             if (match == null) {
-                break; // No more matches
+                break;
             }
             matches.add(match);
             id++;
         }
 
-        // Manual sorting based on match ID (can replace with date sorting if implemented)
         for (int i = 0; i < matches.size(); i++) {
             for (int j = 0; j < matches.size() - i - 1; j++) {
                 if (matches.get(j).getMatchID() > matches.get(j + 1).getMatchID()) {
-                    Collections.swap(matches, j, j + 1); // Swap manually
+                    Collections.swap(matches, j, j + 1);
                 }
             }
         }
         return matches;
+    }
+
+    /**
+     * Filters matches that were played at the specified location.
+     *
+     * @param location the location to filter by
+     * @return a list of matches played at the given location
+     */
+    public List<Match> filterMatchesByLocation(String location) {
+        List<Match> filteredMatches = new ArrayList<>();
+        int id = 1;
+
+        // Iterate through all match IDs
+        while (true) {
+            Match match = matchRepository.read(id);
+            if (match == null) {
+                break; // Stop if no match exists for the ID
+            }
+            // Directly access the location attribute
+            if (match.location.equalsIgnoreCase(location)) { // Assuming `location` is public or has a getter
+                filteredMatches.add(match);
+            }
+            id++;
+        }
+
+        return filteredMatches;
     }
 
     /**

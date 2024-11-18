@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Provides business logic for managing players with validations and sorting.
+ * Provides business logic for managing players with validations, sorting, and filtering.
  */
 public class PlayerService {
     private IRepository<Player> playerRepository;
@@ -127,17 +127,15 @@ public class PlayerService {
         List<Player> players = new ArrayList<>();
         int id = 1;
 
-        // Iterate through all possible player IDs
         while (true) {
             Player player = playerRepository.read(id);
             if (player == null) {
-                break; // Stop if no player exists for the ID
+                break;
             }
             players.add(player);
             id++;
         }
 
-        // Manual sorting by goals in descending order
         for (int i = 0; i < players.size(); i++) {
             for (int j = 0; j < players.size() - i - 1; j++) {
                 if (players.get(j).getGoals() < players.get(j + 1).getGoals()) {
@@ -146,5 +144,29 @@ public class PlayerService {
             }
         }
         return players;
+    }
+
+    /**
+     * Filters players who have scored more goals than the specified number.
+     *
+     * @param minGoals the minimum number of goals
+     * @return a list of players who have scored more than the given number of goals
+     */
+    public List<Player> filterPlayersByGoals(int minGoals) {
+        List<Player> filteredPlayers = new ArrayList<>();
+        int id = 1;
+
+        while (true) {
+            Player player = playerRepository.read(id);
+            if (player == null) {
+                break;
+            }
+            if (player.getGoals() > minGoals) {
+                filteredPlayers.add(player);
+            }
+            id++;
+        }
+
+        return filteredPlayers;
     }
 }

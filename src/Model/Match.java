@@ -11,7 +11,7 @@ public class Match {
     private int teamId1;
     private int teamId2;
     private String date;
-    private String location;
+    public String location;
     private List<Event> events;
 
     /**

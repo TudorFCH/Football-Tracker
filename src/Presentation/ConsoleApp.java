@@ -36,7 +36,9 @@ public class ConsoleApp {
             System.out.println("7. Compare Players (Better Goalscorer)");
             System.out.println("8. Sort Matches by ID");
             System.out.println("9. Sort Players by Goals");
-            System.out.println("10. Exit");
+            System.out.println("10. Filter Players by Goals");
+            System.out.println("11. Filter Matches by Location");
+            System.out.println("12. Exit");
 
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -46,29 +48,29 @@ public class ConsoleApp {
                 switch (choice) {
                     case 1: // Add Match
                         System.out.print("Enter Match ID: ");
-                        int matchID = scanner.nextInt();
+                        int newMatchID = scanner.nextInt();
                         System.out.print("Enter Team1 ID: ");
-                        int teamId1 = scanner.nextInt();
+                        int newTeamId1 = scanner.nextInt();
                         System.out.print("Enter Team2 ID: ");
-                        int teamId2 = scanner.nextInt();
+                        int newTeamId2 = scanner.nextInt();
                         scanner.nextLine(); // Consume newline
                         System.out.print("Enter Date (YYYY-MM-DD): ");
-                        String date = scanner.nextLine();
+                        String newDate = scanner.nextLine();
                         System.out.print("Enter Location: ");
-                        String location = scanner.nextLine();
+                        String newLocation = scanner.nextLine();
 
-                        Match match = new Match(matchID, teamId1, teamId2, date, location);
-                        matchService.addMatch(match);
+                        Match newMatch = new Match(newMatchID, newTeamId1, newTeamId2, newDate, newLocation);
+                        matchService.addMatch(newMatch);
                         System.out.println("Match added successfully!");
                         break;
 
                     case 2: // View Match
                         System.out.print("Enter Match ID to view: ");
                         int viewMatchID = scanner.nextInt();
-                        Match retrievedMatch = matchService.getMatch(viewMatchID);
-                        if (retrievedMatch != null) {
+                        Match matchToView = matchService.getMatch(viewMatchID);
+                        if (matchToView != null) {
                             System.out.println("Match Details:");
-                            System.out.println(retrievedMatch.getSummary());
+                            System.out.println(matchToView.getSummary());
                         } else {
                             System.out.println("Match not found.");
                         }
@@ -76,24 +78,24 @@ public class ConsoleApp {
 
                     case 3: // Add Player
                         System.out.print("Enter Player Name: ");
-                        String playerName = scanner.nextLine();
+                        String newPlayerName = scanner.nextLine();
                         System.out.print("Enter Team ID: ");
-                        int teamID = scanner.nextInt();
+                        int newTeamID = scanner.nextInt();
 
-                        Player player = new Player(0, playerName, teamID);
-                        playerService.addPlayer(player);
+                        Player newPlayer = new Player(0, newPlayerName, newTeamID);
+                        playerService.addPlayer(newPlayer);
                         System.out.println("Player added successfully!");
                         break;
 
                     case 4: // View Player
                         System.out.print("Enter Player ID to view: ");
-                        int playerID = scanner.nextInt();
-                        Player retrievedPlayer = playerService.getPlayer(playerID);
-                        if (retrievedPlayer != null) {
+                        int viewPlayerID = scanner.nextInt();
+                        Player playerToView = playerService.getPlayer(viewPlayerID);
+                        if (playerToView != null) {
                             System.out.println("Player Details:");
-                            System.out.println("Name: " + retrievedPlayer.getName());
-                            System.out.println("Team ID: " + retrievedPlayer.getTeamID());
-                            System.out.println("Statistics: " + retrievedPlayer.getStatistics());
+                            System.out.println("Name: " + playerToView.getName());
+                            System.out.println("Team ID: " + playerToView.getTeamID());
+                            System.out.println("Statistics: " + playerToView.getStatistics());
                         } else {
                             System.out.println("Player not found.");
                         }
@@ -151,20 +153,40 @@ public class ConsoleApp {
                     case 8: // Sort Matches by ID
                         System.out.println("Matches sorted by ID:");
                         List<Match> sortedMatches = matchService.sortMatchesByID();
-                        for (Match matchSorted : sortedMatches) {
-                            System.out.println(matchSorted.getSummary());
+                        for (Match sortedMatch : sortedMatches) {
+                            System.out.println(sortedMatch.getSummary());
                         }
                         break;
 
                     case 9: // Sort Players by Goals
                         System.out.println("Players sorted by goals:");
                         List<Player> sortedPlayers = playerService.sortPlayersByGoals();
-                        for (Player playerSorted : sortedPlayers) {
-                            System.out.println("Name: " + playerSorted.getName() + ", Goals: " + playerSorted.getGoals());
+                        for (Player sortedPlayer : sortedPlayers) {
+                            System.out.println("Name: " + sortedPlayer.getName() + ", Goals: " + sortedPlayer.getGoals());
                         }
                         break;
 
-                    case 10: // Exit
+                    case 10: // Filter Players by Goals
+                        System.out.print("Enter the minimum number of goals: ");
+                        int minGoals = scanner.nextInt();
+                        System.out.println("Players with more than " + minGoals + " goals:");
+                        List<Player> filteredPlayers = playerService.filterPlayersByGoals(minGoals);
+                        for (Player filteredPlayer : filteredPlayers) {
+                            System.out.println("Name: " + filteredPlayer.getName() + ", Goals: " + filteredPlayer.getGoals());
+                        }
+                        break;
+
+                    case 11: // Filter Matches by Location
+                        System.out.print("Enter the location to filter by: ");
+                        String filterLocation = scanner.nextLine();
+                        System.out.println("Matches played at " + filterLocation + ":");
+                        List<Match> filteredMatches = matchService.filterMatchesByLocation(filterLocation);
+                        for (Match filteredMatch : filteredMatches) {
+                            System.out.println(filteredMatch.getSummary());
+                        }
+                        break;
+
+                    case 12: // Exit
                         System.out.println("Exiting the application. Goodbye!");
                         scanner.close();
                         return;
