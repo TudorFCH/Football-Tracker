@@ -12,7 +12,7 @@ public abstract class Event {
     protected int redCards;
     protected int minutesPlayed;
 
-    public Event(int eventID, String type, String time) {
+    public Event(int eventID, String type, String time, int playerID) {
         this.eventID = eventID;
         this.type = type;
         this.time = time;
@@ -37,4 +37,10 @@ public abstract class Event {
     public int getYellowCards() { return yellowCards; }
     public int getRedCards() { return redCards; }
     public int getMinutesPlayed() { return minutesPlayed; }
+
+    public abstract int getMatchID();
+
+    public int getPlayerID() {
+        return playerID;
+    }
 }
