@@ -2,7 +2,9 @@ package Repository;
 
 import Model.Match;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FileRepository implements IRepository<Match> {
@@ -46,6 +48,25 @@ public class FileRepository implements IRepository<Match> {
             }
         } catch (IOException e) {
             System.out.println("Error saving data to file: " + e.getMessage());
+        }
+    }
+
+    public List<Match> getAllMatches() {
+        List<Match> matches = new ArrayList<>();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("matches.txt"))) {
+            matches = (List<Match>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error reading matches: " + e.getMessage());
+        }
+        return matches;
+    }
+
+    // Save matches back to the file
+    public void saveMatches(List<Match> matches) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("matches.txt"))) {
+            oos.writeObject(matches);
+        } catch (IOException e) {
+            System.out.println("Error saving matches: " + e.getMessage());
         }
     }
 

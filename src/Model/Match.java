@@ -83,6 +83,13 @@ public class Match {
         events.add(event);
     }
 
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    public String getLocation() {
+        return location;
+    }
     /**
      * Gets a summary of the match, including events.
      *
@@ -122,3 +129,64 @@ public class Match {
     }
 
 }
+
+//package Model;
+//
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//public class Match {
+//    private int matchID;
+//    private int teamId1;
+//    private int teamId2;
+//    private String date;
+//    private String location;
+//    private List<Event> events; // List of events for this match
+//
+//    public Match(int matchID, int teamId1, int teamId2, String date, String location) {
+//        this.matchID = matchID;
+//        this.teamId1 = teamId1;
+//        this.teamId2 = teamId2;
+//        this.date = date;
+//        this.location = location;
+//        this.events = new ArrayList<>();
+//    }
+//
+//    public int getMatchID() {
+//        return matchID;
+//    }
+//
+//    public int getTeamId1() {
+//        return teamId1;
+//    }
+//
+//    public int getTeamId2() {
+//        return teamId2;
+//    }
+//
+//    public String getLocation() {
+//        return location;
+//    }
+//
+//    public List<Event> getEvents() {
+//        return events;
+//    }
+//
+//    public void addEvent(Event event) {
+//        events.add(event);
+//    }
+//
+//    public String getSummary() {
+//        StringBuilder summary = new StringBuilder();
+//        summary.append("Match ID: ").append(matchID)
+//                .append(", Teams: ").append(teamId1).append(" vs ").append(teamId2)
+//                .append(", Date: ").append(date).append(", Location: ").append(location).append("\n");
+//
+//        for (Event event : events) {
+//            summary.append(event.getEventInfo()).append("\n");
+//        }
+//
+//        return summary.toString();
+//    }
+//
+//}

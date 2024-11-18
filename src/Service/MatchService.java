@@ -1,11 +1,9 @@
 package Service;
 
-import Model.Match;
+import Model.*;
 import Repository.IRepository;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Provides business logic for managing matches with validations, sorting, and filtering.
@@ -48,6 +46,26 @@ public class MatchService {
      */
     public Match getMatch(int id) {
         return matchRepository.read(id);
+    }
+
+    /**
+     * Adds an event to a match.
+     *
+     * @param matchID the ID of the match to add the event to
+     * @param event   the event to add to the match
+     * @throws IllegalArgumentException if the match with the given ID does not exist
+     */
+    public void addEventToMatch(int matchID, Event event) {
+        Match match = matchRepository.read(matchID);
+        if (match == null) {
+            throw new IllegalArgumentException("Match ID " + matchID + " not found.");
+        }
+
+        // Add the event to the match (assuming Match has an events list)
+        match.addEvent(event);
+
+        // After modifying the match, update it in the repository (save changes)
+        matchRepository.update(match);
     }
 
     /**
@@ -95,7 +113,7 @@ public class MatchService {
                 break; // Stop if no match exists for the ID
             }
             // Directly access the location attribute
-            if (match.location.equalsIgnoreCase(location)) { // Assuming `location` is public or has a getter
+            if (match.getLocation().equalsIgnoreCase(location)) { // Assuming `location` is public or has a getter
                 filteredMatches.add(match);
             }
             id++;
@@ -116,4 +134,59 @@ public class MatchService {
         }
         matchRepository.delete(id);
     }
+
+    /**
+     * Determines the best player based on match events.
+     *
+     * @param matchID the match ID
+     * @param playerService the PlayerService instance for retrieving players
+     * @return the best player for the match
+     */
+    public Player determineBestPlayer(int matchID, PlayerService playerService) {
+        Match match = matchRepository.read(matchID);
+        if (match == null) {
+            throw new IllegalArgumentException("Match ID not found.");
+        }
+
+        Map<Integer, Integer> playerScores = new HashMap<>();
+
+        // Assign weights to events
+        final int GOAL_WEIGHT = 10;
+        final int ASSIST_WEIGHT = 5;
+        final int YELLOW_CARD_WEIGHT = -2;
+        final int RED_CARD_WEIGHT = -5;
+
+        // Process all events
+        for (Event event : match.getEvents()) {
+            int playerID = event.playerID;
+            int score = 0;
+
+            if (event instanceof GoalEvent) {
+                score += GOAL_WEIGHT * event.getGoals();
+                score += ASSIST_WEIGHT * event.getAssists();
+            } else if (event instanceof CardEvent) {
+                score += YELLOW_CARD_WEIGHT * event.getYellowCards();
+                score += RED_CARD_WEIGHT * event.getRedCards();
+            }
+
+            playerScores.put(playerID, playerScores.getOrDefault(playerID, 0) + score);
+        }
+
+        // Determine the best player
+        int bestPlayerID = -1;
+        int maxScore = Integer.MIN_VALUE;
+        for (Map.Entry<Integer, Integer> entry : playerScores.entrySet()) {
+            if (entry.getValue() > maxScore) {
+                bestPlayerID = entry.getKey();
+                maxScore = entry.getValue();
+            }
+        }
+
+        if (bestPlayerID == -1) {
+            throw new IllegalStateException("No valid events for determining the best player.");
+        }
+
+        return playerService.getPlayer(bestPlayerID);
+    }
+
 }

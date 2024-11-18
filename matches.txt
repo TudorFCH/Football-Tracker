@@ -1,0 +1,1 @@
+1,1,2,2024-11-18,Cluj|Goal Event - Player ID: 1, Assist: false, Time: 37:21|Goal Event - Player ID: 1, Assist: false, Time: 71:30|Goal Event - Player ID: 2, Assist: false, Time: 89:00|Goal Event - Player ID: 1, Assist: false, Time: 41:30
