@@ -1,9 +1,7 @@
 package Presentation;
 
 import Model.*;
-import Repository.FilePlayerRepository;
-import Repository.FileRepository;
-import Repository.EventRepository;
+import Repository.*;
 import Service.MatchService;
 import Service.PlayerService;
 
@@ -13,17 +11,47 @@ import java.util.Scanner;
 public class ConsoleApp {
 
     public static void main(String[] args) {
-        // Initialize repositories and services
-        FilePlayerRepository playerRepository = new FilePlayerRepository("players.txt");
-        FileRepository matchRepository = new FileRepository("matches.txt");
-        EventRepository eventRepository = new EventRepository("events.txt");
-
-        // Initialize the services with the appropriate repositories
-        PlayerService playerService = new PlayerService(playerRepository);
-        MatchService matchService = new MatchService(matchRepository);
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Welcome to the Football Score & Player Stats Tracker!");
+        System.out.println("Select storage type:");
+        System.out.println("1. In-Memory");
+        System.out.println("2. File");
+        System.out.println("3. Database");
+
+        System.out.print("Your choice: ");
+        int storageChoice = scanner.nextInt();
+        scanner.nextLine();
+
+        IRepository<Player> playerRepository;
+        IRepository<Match> matchRepository;
+        IRepository<Event> eventRepository;
+
+        switch (storageChoice) {
+            case 1:
+                playerRepository = new InMemoryRepository<>();
+                matchRepository = new InMemoryRepository<>();
+                eventRepository = new InMemoryRepository<>();
+                break;
+            case 2:
+                playerRepository = new FilePlayerRepository("players.txt");
+                matchRepository = new FileRepository("matches.txt");
+                eventRepository = new FileEventRepository("events.txt");
+                break;
+            case 3:
+                playerRepository = new PlayerDatabaseRepository();
+                matchRepository = new DatabaseMatchRepository();
+                eventRepository = new EventDatabaseRepository();
+                break;
+            default:
+                System.out.println("Invalid choice. Exiting.");
+                scanner.close();
+                return;
+        }
+
+
+        PlayerService playerService = new PlayerService(playerRepository);
+        MatchService matchService = new MatchService(matchRepository);
 
         while (true) {
             System.out.println("\nMenu:");
@@ -48,63 +76,49 @@ public class ConsoleApp {
 
             try {
                 switch (choice) {
-                    case 1: // Add Match
+                    case 1:
                         addMatch(scanner, matchService);
                         break;
-
-                    case 2: // View Match
+                    case 2:
                         viewMatch(scanner, matchService);
                         break;
-
-                    case 3: // Add Player
+                    case 3:
                         addPlayer(scanner, playerService);
                         break;
-
-                    case 4: // View Player
+                    case 4:
                         viewPlayer(scanner, playerService);
                         break;
-
-                    case 5: // Add Event to Match
+                    case 5:
                         addEventToMatch(scanner, matchService, eventRepository);
                         break;
-
-                    case 6: // Update Player Statistics
+                    case 6:
                         updatePlayerStatistics(scanner, playerService);
                         break;
-
-                    case 7: // Delete Player
+                    case 7:
                         deletePlayer(scanner, playerService);
                         break;
-
-                    case 8: // Compare Players
+                    case 8:
                         comparePlayers(scanner, playerService);
                         break;
-
-                    case 9: // Sort Matches by ID
+                    case 9:
                         sortMatchesByID(matchService);
                         break;
-
-                    case 10: // Sort Players by Goals
+                    case 10:
                         sortPlayersByGoals(playerService);
                         break;
-
-                    case 11: // Filter Players by Goals
+                    case 11:
                         filterPlayersByGoals(scanner, playerService);
                         break;
-
-                    case 12: // Filter Matches by Location
+                    case 12:
                         filterMatchesByLocation(scanner, matchService);
                         break;
-
-                    case 13: // Best player in certain match
+                    case 13:
                         bestPlayerInMatch(scanner, matchService, playerService);
                         break;
-
-                    case 14: // Exit
+                    case 14:
                         System.out.println("Exiting the application. Goodbye!");
                         scanner.close();
                         return;
-
                     default:
                         System.out.println("Invalid option. Please try again.");
                 }
@@ -113,6 +127,7 @@ public class ConsoleApp {
             }
         }
     }
+
 
     private static void addMatch(Scanner scanner, MatchService matchService) {
         System.out.print("Enter Match ID: ");
@@ -169,7 +184,7 @@ public class ConsoleApp {
         }
     }
 
-    private static void addEventToMatch(Scanner scanner, MatchService matchService, EventRepository eventRepository) {
+    private static void addEventToMatch(Scanner scanner, MatchService matchService, IRepository<Event> eventRepository) {
         System.out.print("Enter Match ID to add event: ");
         int matchID = scanner.nextInt();
         scanner.nextLine(); // Consume newline
@@ -204,11 +219,12 @@ public class ConsoleApp {
         }
 
         if (event != null) {
-            eventRepository.saveEvents(List.of(event)); // Save event to file
+            eventRepository.create(event); // Save event to repository
             matchService.addEventToMatch(matchID, event); // Add event to match
             System.out.println("Event added successfully.");
         }
     }
+
 
     private static GoalEvent createGoalEvent(Scanner scanner) {
         System.out.print("Enter Event ID: ");

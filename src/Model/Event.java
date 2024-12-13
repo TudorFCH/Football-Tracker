@@ -32,7 +32,8 @@ public abstract class Event {
     public void addAssist() { assists++; }
     public void addYellowCard() { yellowCards++; }
     public void addRedCard() { redCards++; }
-    public void setMinutesPlayed(int minutes) { this.minutesPlayed = minutes; }
+    public void setMinutesPlayed(int minutes) { this.minutesPlayed = minutes;}
+    public void setEventID(int eventID) {this.eventID = eventID;  }
 
     public int getGoals() { return goals; }
     public int getAssists() { return assists; }
@@ -40,4 +41,8 @@ public abstract class Event {
     public int getRedCards() { return redCards; }
     public int getMinutesPlayed() { return minutesPlayed; }
     public int getMatchID() { return matchID; }
+    public int getEventID(){return eventID;}
+    public int getPlayerID() { return playerID; }
+    public String getType() { return type; }
+    public String getTime() { return time; }
 }

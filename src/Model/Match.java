@@ -74,6 +74,10 @@ public class Match {
         return teamId2;
     }
 
+    public String getDate() {
+        return date;
+    }
+
     /**
      * Adds an event to the match.
      *
