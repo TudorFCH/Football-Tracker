@@ -27,7 +27,7 @@ public class ApplicationTest {
 
     @Test
     public void testAddAndRetrievePlayer() {
-        Player player = new Player(0, "John Doe", 1);
+        Player player = new Player(1, "John Doe", 1);
         playerService.addPlayer(player);
         Player retrievedPlayer = playerService.getPlayer(player.getPlayerID());
         assertNotNull(retrievedPlayer);
@@ -36,7 +36,7 @@ public class ApplicationTest {
 
     @Test
     public void testAddMatchAndRetrieve() {
-        Match match = new Match(0, 1, 2, "2024-11-10", "Stadium");
+        Match match = new Match(1, 1, 2, "2024-11-10", "Stadium");
         matchService.addMatch(match);
         Match retrievedMatch = matchService.getMatch(match.getMatchID());
         assertNotNull(retrievedMatch);
