@@ -4,7 +4,7 @@ Football Score & Player Stats Tracker
 
  
 
-A Java-based terminal application for tracking football match scores and managing player statistics. This application allows users to input live match scores, view match summaries, and track the stats of favorite players throughout the season. 
+A Java-based terminal application for tracking football match scores and managing player statistics. This application allows users to input match scores and track the stats of favorite players throughout the season. 
 
  
 
@@ -14,11 +14,11 @@ Features
 
 	1.	Football Score Tracking: 
 
-	•	Input live scores and events for ongoing matches. 
+	•	Input scores and events for matches. 
 
-	•	Filter match scores by league or team for focused updates. 
+	•	Filter match scores by team for focused updates. 
 
-	•	View a summary of match events, including goals, cards, and substitutions. 
+	•	View a summary of match events, including goals, assists, cards, and substitutions. 
 
 	2.	Player Stats Management: 
 
@@ -40,9 +40,8 @@ Usage
 
 1. Football Score Tracking 
 
-	•	Start the application and navigate to the “Score Tracker” section. 
 
-	•	Enter live match scores, and filter matches by team or league to view relevant games. 
+	•	Enter live match scores, and filter matches by team to view relevant games. 
 
 	•	After a match concludes, view the summary report for key events (e.g., goals, cards). 
 
